@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}О проекте | DeltaCalc{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1><i class="fas fa-info-circle"></i> О проекте DeltaCalc</h1>
+    <p class="subtitle">Инструмент для расчёта погрешностей в физических и инженерных измерениях</p>
+
+    <div class="theory-block">
+        <h2><i class="fas fa-bullseye"></i> Наша миссия</h2>
+        <p>DeltaCalc создан для помощи студентам, исследователям и инженерам в точном расчёте погрешностей измерений. Мы стремимся сделать сложные математические расчёты доступными и понятными для каждого.</p>
+    </div>
+
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
+        <div class="var-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h3>Простота использования</h3>
+            <p>Интуитивно понятный интерфейс, не требующий специальных знаний в программировании или математике.</p>
+        </div>
+        
+        <div class="var-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3>Визуализация данных</h3>
+            <p>Наглядные графики и диаграммы помогают понять вклад каждой переменной в общую погрешность.</p>
+        </div>
+        
+        <div class="var-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3>Образовательный ресурс</h3>
+            <p>Подробная теория и примеры для самостоятельного изучения методов обработки измерений.</p>
+        </div>
+    </div>
+
+    <div class="theory-block">
+        <h2><i class="fas fa-wrench"></i> Основные возможности</h2>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="var-card">
+                <h4><i class="fas fa-square-root-alt"></i> Произвольные формулы</h4>
+                <p>Поддержка любых математических выражений с использованием стандартных операций и функций.</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-project-diagram"></i> Метод частных производных</h4>
+                <p>Автоматический расчёт погрешностей по формуле распространения неопределённостей.</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-palette"></i> Два режима оформления</h4>
+                <p>Светлая и тёмная темы для комфортной работы в любое время суток.</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-history"></i> История вычислений</h4>
+                <p>Сохранение последних расчётов для быстрого доступа и сравнения.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="theory-block">
+        <h2><i class="fas fa-handshake"></i> Контакты и поддержка</h2>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            <div class="var-card">
+                <h4><i class="fas fa-bug"></i> Сообщить об ошибке</h4>
+                <p>Если вы обнаружили ошибку в расчётах или работу интерфейса, пожалуйста, сообщите нам.</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-lightbulb"></i> Предложить идею</h4>
+                <p>Есть предложения по улучшению функциональности? Мы будем рады вашим идеям!</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-question-circle"></i> Вопросы по использованию</h4>
+                <p>Нужна помощь в работе с калькулятором? Обращайтесь за консультацией.</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: rgba(212, 167, 98, 0.1); border-radius: 12px; border: 2px solid rgba(212, 167, 98, 0.3);">
+            <h4 style="color: var(--secondary); margin-bottom: 1.5rem;"><i class="fas fa-envelope"></i> Свяжитесь с нами</h4>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">
+                    <strong>📧 Электронная почта:</strong>
+                </p>
+                <a href="mailto:deltacalculator2025@gmail.com" 
+                   style="font-size: 1.3rem; color: var(--primary); font-weight: bold; text-decoration: none; border-bottom: 2px dotted var(--primary); padding-bottom: 2px;">
+                   deltacalculator2025@gmail.com
+                </a>
+            </div>
+            
+            <div style="background: rgba(139, 90, 43, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> Мы стремимся отвечать на все письма в течение 24 часов. 
+                    Мы ценим ваши отзывы и предложения!
+                </p>
+            </div>
+        </div>
+    </div>
+
+        
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(139, 90, 43, 0.2);">
+            <p style="font-size: 0.95rem; color: var(--text-secondary);">
+                © 2025 DeltaCalc — Калькулятор погрешностей косвенных измерений               
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Анимация иконок при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const icons = document.querySelectorAll('.var-card');
+        icons.forEach((icon, index) => {
+            setTimeout(() => {
+                icon.style.opacity = '0';
+                icon.style.transform = 'translateY(20px)';
+                icon.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    icon.style.opacity = '1';
+                    icon.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+        
+        // Анимация для почты
+        const emailLink = document.querySelector('a[href^="mailto:"]');
+        if (emailLink) {
+            emailLink.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            
+            emailLink.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        }
+    });
+</script>
+{% endblock %}

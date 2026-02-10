@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="{{ theme }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}DeltaCalc{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Калькулятор погрешностей для физических и инженерных расчётов">
+    
+    <!-- MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>Δ</text></svg>">
+    
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" href="/">
+            <i class="fas fa-calculator"></i>
+            DeltaCalc
+            <span style="font-size: 0.8rem; opacity: 0.9; margin-left: 0.3rem;">Δ</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                <i class="fas fa-calculator"></i> Калькулятор
+            </a>
+            <a href="/theory" class="nav-link {% if request.path == '/theory' %}active{% endif %}">
+                <i class="fas fa-book"></i> Теория
+            </a>
+            <a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">
+                <i class="fas fa-info-circle"></i> О проекте
+            </a>
+            <a href="/toggle_theme" class="nav-link theme-toggle">
+                {% if theme == 'light' %}
+                    <i class="fas fa-moon"></i> Тёмная
+                {% else %}
+                    <i class="fas fa-sun"></i> Светлая
+                {% endif %}
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="page">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p>© 2025 DeltaCalc — калькулятор погрешностей | Версия 1.0</p>
+    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
+        Для студентов, исследователей и инженеров
+    </p>
+</footer>
+
+<script>
+    // Плавная анимация для всех ссылок
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем плавный скролл для всех ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Индикатор загрузки MathJax
+        if (window.MathJax) {
+            MathJax.startup.promise.then(() => {
+                console.log('MathJax loaded successfully');
+            });
+        }
+    });
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

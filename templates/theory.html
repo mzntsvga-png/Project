@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}Теория погрешностей | DeltaCalc{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1><i class="fas fa-book-open"></i> Полное руководство по теории погрешностей</h1>
+    <p class="subtitle">От основ математического анализа до практических рекомендаций по обработке результатов измерений</p>
+
+    <!-- Навигация по разделам теории -->
+    <div class="theory-block" style="background: rgba(212, 167, 98, 0.08);">
+        <h3><i class="fas fa-list"></i> Содержание</h3>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            {% for t in theory %}
+            <a href="#{{ t.id }}" class="var-card" style="text-decoration: none; cursor: pointer;">
+                <h4><i class="fas fa-{{ t.icon }}"></i> {{ t.title }}</h4>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for t in theory %}
+    <div class="theory-block" id="{{ t.id }}">
+        <h2><i class="fas fa-{{ t.icon }}"></i> {{ t.title }}</h2>
+        <p>{{ t.text }}</p>
+        
+        <div class="formula">
+            \[
+            {{ t.formula }}
+            \]
+        </div>
+        
+        {% if t.sections %}
+        <div class="theory-sections">
+            {% for section in t.sections %}
+            <div class="theory-section">
+                <h3>{{ section.title }}</h3>
+                <p>{{ section.content|safe }}</p>
+                
+                {% if section.formula %}
+                <div class="formula" style="margin-top: 1rem;">
+                    \[
+                    {{ section.formula }}
+                    \]
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if t.id == "derivatives" %}
+        <!-- Примеры производных часто встречающихся функций -->
+        <div class="theory-section">
+            <h3><i class="fas fa-table"></i> Таблица производных основных функций</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Функция f(x)</th>
+                            <th>Производная f'(x)</th>
+                            <th>Пример применения</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\( x^n \)</td>
+                            <td>\( n \cdot x^{n-1} \)</td>
+                            <td>Скорость изменения площади круга по радиусу</td>
+                        </tr>
+                        <tr>
+                            <td>\( \sin(x) \)</td>
+                            <td>\( \cos(x) \)</td>
+                            <td>Скорость изменения координаты в гармонических колебаниях</td>
+                        </tr>
+                        <tr>
+                            <td>\( \cos(x) \)</td>
+                            <td>\( -\sin(x) \)</td>
+                            <td>Скорость изменения проекции вращающегося вектора</td>
+                        </tr>
+                        <tr>
+                            <td>\( e^x \)</td>
+                            <td>\( e^x \)</td>
+                            <td>Рост в процессах с постоянной относительной скоростью</td>
+                        </tr>
+                        <tr>
+                            <td>\( \ln(x) \)</td>
+                            <td>\( \frac{1}{x} \)</td>
+                            <td>Чувствительность логарифмической шкалы</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if t.id == "errors" %}
+        <!-- Классификация погрешностей -->
+        <div class="theory-section">
+            <h3><i class="fas fa-sitemap"></i> Классификационная схема погрешностей</h3>
+            <div style="display: flex; justify-content: center; margin: 2rem 0;">
+                <div style="max-width: 800px; background: rgba(139, 90, 43, 0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(139, 90, 43, 0.2);">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--primary);">Погрешности измерений</h4>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div>
+                            <h5 style="color: var(--secondary);">По характеру проявления:</h5>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>Систематические</strong> (постоянные)</li>
+                                <li><strong>Случайные</strong> (непредсказуемые)</li>
+                                <li><strong>Грубые</strong> (промахи)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: var(--secondary);">По способу выражения:</h5>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>Абсолютные</strong> (\(\Delta x\))</li>
+                                <li><strong>Относительные</strong> (\(\delta x\))</li>
+                                <li><strong>Приведённые</strong> (\(\gamma\))</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if t.id == "why_this_method" %}
+        <!-- Сравнение методов -->
+        <div class="theory-section">
+            <h3><i class="fas fa-chart-bar"></i> Сравнительная характеристика методов</h3>
+            <div class="canvas-container">
+                <canvas id="comparisonChart{{ t.id }}" height="400"></canvas>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <p><strong>Вывод:</strong> Метод квадратичного сложения обеспечивает оптимальный баланс между точностью и реалистичностью оценок. Он даёт меньшие, но статистически обоснованные оценки погрешности, что соответствует современным метрологическим стандартам.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Заключение -->
+    <div class="theory-block" style="background: linear-gradient(135deg, rgba(212, 167, 98, 0.1), rgba(139, 90, 43, 0.05));">
+        <h2><i class="fas fa-graduation-cap"></i> Итоги и рекомендации</h2>
+        <p>Правильный расчёт погрешностей — не просто формальность, а важнейшая часть научной работы. Он позволяет:</p>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 1.5rem;">
+            <div class="var-card">
+                <h4><i class="fas fa-check-circle"></i> Оценить достоверность</h4>
+                <p>Определить, насколько можно доверять полученным результатам</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-ruler-combined"></i> Сравнить результаты</h4>
+                <p>Правильно сопоставлять данные разных экспериментов</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-chart-line"></i> Оптимизировать измерения</h4>
+                <p>Выявить, какие параметры вносят наибольший вклад в погрешность</p>
+            </div>
+            
+            <div class="var-card">
+                <h4><i class="fas fa-file-alt"></i> Корректно оформлять работу</h4>
+                <p>Соответствовать требованиям научных публикаций и отчётов</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/" class="btn">
+                <i class="fas fa-calculator"></i> Перейти к калькулятору
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // График сравнения методов
+    document.addEventListener('DOMContentLoaded', function() {
+        const comparisonCtx = document.getElementById('comparisonChartwhy_this_method');
+        if (comparisonCtx) {
+            new Chart(comparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Точность', 'Реалистичность', 'Сложность', 'Стандартизация'],
+                    datasets: [
+                        {
+                            label: 'Метод границ',
+                            data: [2, 3, 1, 2],
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Линейное сложение',
+                            data: [3, 4, 2, 3],
+                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Квадратичное сложение',
+                            data: [5, 5, 3, 5],
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                color: 'var(--text)',
+                                callback: function(value) {
+                                    const labels = ['Низкая', 'Ниже сред.', 'Средняя', 'Выше сред.', 'Высокая'];
+                                    return labels[value - 1] || '';
+                                }
+                            },
+                            grid: {
+                                color: 'var(--border)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'var(--text)'
+                            },
+                            grid: {
+                                color: 'var(--border)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'var(--text)',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Плавная прокрутка к якорям
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Перезагрузка MathJax после загрузки графиков
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+</script>
+{% endblock %}

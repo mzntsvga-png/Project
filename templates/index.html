@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block title %}Калькулятор погрешностей | DeltaCalc{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1><i class="fas fa-calculator"></i> Калькулятор погрешностей</h1>
+    <p class="subtitle">Расчёт погрешностей косвенных измерений методом квадратичного сложения</p>
+
+    <div class="theory-block" style="background: rgba(212, 167, 98, 0.1);">
+        <h3><i class="fas fa-lightbulb"></i> Как пользоваться калькулятором?</h3>
+        <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+            <li>Введите формулу (например: <code>m*v^2/2</code>, <code>pi*r^2</code>, <code>sin(x)*cos(y)</code>)</li>
+            <li>Укажите значения переменных и их абсолютные погрешности</li>
+            <li>Нажмите "Рассчитать" для получения результатов</li>
+            <li>Изучите вклад каждой переменной в общую погрешность</li>
+        </ol>
+        <p style="margin-top: 1rem;"><strong>Поддерживаемые функции:</strong> sin(), cos(), tan(), exp(), log(), sqrt(), а также константа pi.</p>
+    </div>
+
+    <form method="post" id="calc-form">
+        <div style="margin: 2rem 0;">
+            <label for="formula-input"><i class="fas fa-square-root-alt"></i> Формула (используйте переменные a, b, c, x, y, z...):</label>
+            <input type="text" 
+                   id="formula-input" 
+                   name="formula" 
+                   value="{{ formula }}" 
+                   placeholder="Пример: m*v^2/2" 
+                   required
+                   style="font-family: monospace; font-size: 1.1rem;">
+        </div>
+
+        {% if variables %}
+        <hr>
+        
+        <div class="theory-block" style="background: rgba(212, 167, 98, 0.05);">
+            <h4><i class="fas fa-list"></i> Введите значения переменных:</h4>
+        </div>
+
+        <div class="grid">
+            {% for v in variables %}
+            <div class="var-card">
+                <div style="text-align: center;">
+                    <h4 style="margin-bottom: 1rem;">
+                        Переменная <span style="color: var(--primary); font-size: 1.8rem;">{{ v }}</span>
+                    </h4>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 0.9rem;">Значение</label>
+                        <input type="number" 
+                               name="value_{{v}}" 
+                               placeholder="значение" 
+                               value="{{ values.get(v,'') }}" 
+                               required
+                               step="any"
+                               min="0">
+                    </div>
+                    
+                    <div>
+                        <label style="font-size: 0.9rem;">Погрешность ±</label>
+                        <input type="number" 
+                               name="error_{{v}}" 
+                               placeholder="погрешность" 
+                               value="{{ errors.get(v,'') }}" 
+                               required
+                               step="any"
+                               min="0">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+            <button class="btn" name="action" value="calculate" type="submit" style="flex: 1;">
+                <i class="fas fa-bolt"></i> Рассчитать погрешность
+            </button>
+            
+            <button type="button" class="btn" onclick="resetForm()" 
+                    style="background: linear-gradient(135deg, #6c757d, #495057);">
+                <i class="fas fa-redo"></i> Сбросить
+            </button>
+        </div>
+    </form>
+
+    {% if error %}
+    <div class="error-box">
+        <h4><i class="fas fa-exclamation-triangle"></i> Ошибка вычисления</h4>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <hr>
+    
+    <div class="theory-block" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05)); border-left-color: #28a745;">
+        <h2><i class="fas fa-chart-line"></i> Результаты вычислений</h2>
+        <p>Функция: \( {{ result.formula | safe }} \)</p>
+    </div>
+
+    <div class="result-grid">
+        <div class="result-card">
+            <span>Значение функции</span>
+            <strong>{{ result.formatted.main_value }}</strong>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                \( F = {{ result.formula | safe }} \)
+            </p>
+        </div>
+        <div class="result-card warning">
+            <span>Абсолютная погрешность</span>
+            <strong>±{{ result.formatted.absolute_error }}</strong>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                \( \Delta F \)
+            </p>
+        </div>
+        <div class="result-card danger">
+            <span>Относительная погрешность</span>
+            <strong>{{ result.formatted.relative_error }}%</strong>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                \( \delta F = \frac{\Delta F}{|F|} \times 100\% \)
+            </p>
+        </div>
+        <div class="result-card success">
+            <span>Интервал достоверности</span>
+            <strong>[{{ result.formatted.interval[0] }}; {{ result.formatted.interval[1] }}]</strong>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                \( F \pm \Delta F \)
+            </p>
+        </div>
+    </div>
+
+    {% if result.derivatives %}
+    <div style="margin: 3rem 0;">
+        <h3><i class="fas fa-chart-pie"></i> Вклад переменных в общую погрешность</h3>
+        
+        <div style="position: relative; height: 400px; margin: 2rem 0;">
+            <canvas id="errorChart"></canvas>
+        </div>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 2rem;">
+            {% for var_name, deriv in result.derivatives.items() %}
+            <div class="var-card">
+                <h4 style="color: var(--secondary);">Переменная {{ var_name }}</h4>
+                <div style="margin: 1rem 0;">
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Частная производная:</div>
+                    <div style="background: rgba(139, 90, 43, 0.1); padding: 0.5rem; border-radius: 6px; margin: 0.5rem 0;">
+                        \( \frac{\partial F}{\partial {{ var_name }}} = {{ deriv.latex | safe }} \)
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+                    <div style="background: rgba(212, 167, 98, 0.1); padding: 0.5rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 0.8rem;">Значение</div>
+                        <div style="font-weight: bold; color: var(--secondary);">{{ "%.4f"|format(deriv.value) }}</div>
+                    </div>
+                    <div style="background: rgba(220, 53, 69, 0.1); padding: 0.5rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 0.8rem;">Вклад в ΔF</div>
+                        <div style="font-weight: bold; color: #dc3545;">{{ "%.4f"|format(deriv.partial_error) }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="theory-block">
+        <h3><i class="fas fa-cogs"></i> Детали вычислений</h3>
+        <p>Общая погрешность вычислена по формуле распространения неопределённостей (метод квадратичного сложения):</p>
+        <div class="formula">
+            \[
+            \Delta F = \sqrt{\sum_{i=1}^{n} \left( \frac{\partial F}{\partial x_i} \Delta x_i \right)^2}
+            \]
+        </div>
+        <div style="margin-top: 1rem; padding: 1rem; background: rgba(139, 90, 43, 0.05); border-radius: 8px;">
+            <p style="font-family: monospace; margin: 0; color: var(--text);">
+                ΔF = √[ 
+                {% for var_name, deriv in result.derivatives.items() %}
+                ({{ "%.4f"|format(deriv.value) }} × {{ "%.4f"|format(errors[var_name]|float) }})²
+                {% if not loop.last %} + {% endif %}
+                {% endfor %}
+                ] = {{ "%.4f"|format(result.absolute_error) }}
+            </p>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-secondary);">
+            <i class="fas fa-info-circle"></i> Подробнее о выборе этого метода читайте в разделе 
+            <a href="/theory#why_this_method" style="color: var(--primary);">"Почему метод квадратичного сложения?"</a>
+        </p>
+    </div>
+    {% endif %}
+    
+    {% endif %}
+</div>
+
+<script>
+    // Сброс формы
+    function resetForm() {
+        document.getElementById('calc-form').reset();
+        window.location.href = '/';
+    }
+    
+    // Обработка нажатия Enter в поле формулы
+    document.getElementById('formula-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('calc-form').submit();
+        }
+    });
+    
+    {% if result and result.derivatives %}
+    // Построение круговой диаграммы
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('errorChart').getContext('2d');
+        
+        const labels = {{ result.derivatives.keys() | list | tojson }};
+        const data = [
+            {% for v in result.derivatives.values() %}
+            {{ v.error_squared }},
+            {% endfor %}
+        ];
+        
+        const colors = [
+            'rgba(212, 167, 98, 0.8)',
+            'rgba(139, 90, 43, 0.8)',
+            'rgba(242, 201, 76, 0.8)',
+            'rgba(224, 198, 140, 0.8)',
+            'rgba(92, 58, 30, 0.8)'
+        ];
+        
+        const borderColors = colors.map(color => color.replace('0.8', '1'));
+        
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderColor: borderColors.slice(0, labels.length),
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: 'var(--text)',
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label;
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value.toFixed(4)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+    {% endif %}
+</script>
+{% endblock %}
